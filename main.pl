@@ -1,59 +1,53 @@
-% Факти
-male(harry).
-female(liz).
-male(phil).
-female(chas).
-male(chas).
-male(wills).
-parent(phil, harry).
-parent(liz, harry).
-parent(phil, wills).
-parent(liz, wills).
-parent(chas, phil).
-parent(chas, liz).
+% Facts (F)
+likes(john, pizza).
+likes(mary, pizza).
+likes(viktor, chocolate).
+likes(zhenia, shaurma).
+likes(anna, ice_cream).
+likes(peter, sushi).
 
-grandmother(GM, C):-  
-    mother(GM, P),  
-    parent(P, C).
+hates(john, cola).
+hates(mary, tomato).
+hates(viktor, milkshake).
+hates(zhenia, apple)
+hates(anna, broccoli).
+hates(peter, anchovies).
 
-mother(M,C):-  
-    female(M),  
-    parent(M, C).
+discount(john, shaurma).
+discount(john, ice_cream).
+discount(viktor, ice_cream).
+discount(viktor, sushi).
+discount(zhenia, broccoli).
 
-father(F, C):-  
-    male(F),  
-    parent(F, C).
+% Rules (R)
+friend(X, Y) :- likes(X, Z), likes(Y, Z), X \= Y.
+suggest_alternative_food(X, DislikedFood, AlternativeFood) :- hates(X, DislikedFood), likes(X, AlternativeFood), \+(hates(X, AlternativeFood)).
+eligible_for_discount(Person, Food) :- discount(Person, Food).
 
-grandfather(GF, C):-  
-    father(GF, P),  
-    parent(P, C).
+% Procedures (P)
+recommend_food(X, Y) :- friend(X, Y), likes(Y, F), write(X), write(' recommends '), write(F), write(' to '), write(Y), nl.
+suggest_alternative_food_for_hater(Person) :-
+    hates(Person, DislikedFood),
+    suggest_alternative_food(Person, DislikedFood, AlternativeFood),
+    write('Suggestion for '), write(Person), write(' who hates '), write(DislikedFood),
+    write(': You may like '), write(AlternativeFood), nl.
 
-son(S, P):-  
-    male(S),  
-    parent(P, S).
+suggest_discounts(Person) :-
+    write('Discounts available for '), write(Person), write(':'), nl,
+    discount(Person, Food),
+    write('- 50% off on '), write(Food), nl,
+    fail.
+suggest_discounts(_).
 
-daughter(D, P):-  
-    female(D),  
-    parent(P, D).
+% Example query
 
-greatgrandfather(GGF, C):-  
-    father(GGF, GF),  
-    father(GF, P),  
-    parent(P, C).
-
-greatgrandmother(GGM, C):-  
-    mother(GGM, GM),  
-    mother(GM, P),  
-    parent(P, C).
-
-% Check if "liz" is a mother
-?- mother(liz, Child).
-
-% Find the sons of "chas"
-?- son(Son, chas).
-
-% Determine who the great-grandmothers of "harry" are
-?- greatgrandmother(GGM, harry).
-
-% Check if "harry" is a grandfather
-?- grandfather(harry, Child).
+?- recommend_food(john, mary).
+?- suggest_alternative_food(john, cola, Suggest).
+% Suggest = pizza
+?- suggest_alternative_food(mary, tomato, pizza). 
+% true
+?- suggest_alternative_food_for_hater(Person)
+?- eligible_for_discount(john, ice_cream).
+?- suggest_discounts(john).
+% To find all
+?- findall(Person, eligible_for_discount(Person, ice_cream), PeopleList).

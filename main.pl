@@ -25,7 +25,7 @@ suggest_alternative_food(X, DislikedFood, AlternativeFood) :- hates(X, DislikedF
 eligible_for_discount(Person, Food) :- discount(Person, Food).
 
 % Procedures (P)
-recommend_food(X, Y) :- friend(X, Y), likes(Y, F), write(X), write(' recommends '), write(F), write(' to '), write(Y), nl.
+recommend_food(X, Y) :- likes(Y, F), Y\=X, write(X), write(' recommends '), write(F), write(' to '), write(Y), nl.
 suggest_alternative_food_for_hater(Person) :-
     hates(Person, DislikedFood),
     suggest_alternative_food(Person, DislikedFood, AlternativeFood),
